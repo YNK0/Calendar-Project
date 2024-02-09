@@ -12,7 +12,7 @@ export default function Meetings() {
             id: 1,
             motivo: "Cita",
             nombre: "Jose Antonio Perez",
-            date: "Januray 10th, 2022",
+            date: "10 de Enero, 2022",
             time: "12:00 PM",
             place: "Nacajuca",
             confirmed: false,
@@ -21,7 +21,7 @@ export default function Meetings() {
             id: 2,
             motivo: "Reunión",
             nombre: "Maria Hernandez",
-            date: "Januray 15th, 2022",
+            date: "15 de Enero, 2022",
             time: "10:00 AM",
             place: "Villahermosa",
             confirmed: true,
@@ -30,7 +30,7 @@ export default function Meetings() {
             id: 3,
             motivo: "Cita",
             nombre: "Juan Perez",
-            date: "Januray 20th, 2022",
+            date: "20 de Enero, 2022",
             time: "11:00 AM",
             place: "Cunduacan",
             confirmed: false,
@@ -38,8 +38,12 @@ export default function Meetings() {
         }
     ];
 
+    function toDate(date) {
+        return new Date(date);
+    }
+
     const handleCancelMeeting = (id) => {
-        // Lógica para cancelar la cita con el ID proporcionado
+        console.log("sasas");
     };
 
     const handleEditMeeting = (id) => {
@@ -77,7 +81,7 @@ export default function Meetings() {
                         {showDropdown === meeting.id && (
                             <div className="absolute top-0 right-0 mt-8 w-40 bg-white border border-gray-200 rounded-lg shadow-md z-10">
                                 <button onClick={() => handleEditMeeting(meeting.id)} className="block px-4 py-2 text-gray-800 hover:bg-gray-100 w-full text-left">Modificar</button>
-                                <button onClick={() => handleCancelMeeting(meeting.id)} className="block px-4 py-2 text-gray-800 hover:bg-gray-100 w-full text-left">Cancelar</button>
+                                <button onClick={() => handleCancelMeeting(meeting.id)} className="block px-4 py-2 text-gray-800 hover:bg-gray-100 w-full text-left">Cancelar cita</button>
                             </div>
                         )}
                     </div>

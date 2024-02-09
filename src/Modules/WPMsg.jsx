@@ -1,7 +1,6 @@
 import React from 'react'
 import wpmsg from '../img/wp.svg'
 import check from '../img/calendar-check.svg'
-import { useState } from 'react'
 
 export default function WPMsg(item) {
     const user = {
@@ -20,10 +19,15 @@ export default function WPMsg(item) {
     const encodedMessage = encodeURIComponent(confirmationMessage);
     const url = `https://wa.me/1${user.phone}?text=${encodedMessage}`;
 
+
+    function toDate(date) {
+        console.log(new Date(date.date))
+    }
+
     return (
         <div>
-            <a href={url} target="_blank"><img src={wpmsg} alt="Icono" className="inline-block w-12 h-12 mx-1" /></a>
-            <button className='font-bold'><img src={check} alt="Icono" className="inline-block w-6 h-6 ml-4 mr-1" />Confirmar cita</button>
+            <a href={url} target="_blank"><img src={wpmsg} alt="Icono" className="inline-block w-12 h-12 mx-1 transform transition-transform hover:scale-110" /></a>
+            <button onClick={() => toDate(user)} className='font-bold transition-transform hover:-translate-y-1'><img src={check} alt="Icono" className="inline-block w-6 h-6 ml-4 mr-1 " />Confirmar cita</button>
         </div>
     )
 }

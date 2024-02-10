@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import Meetings from './Modules/meetings';
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
 import './App.css';
+import 'react-day-picker/dist/style.css';
+import { es } from 'date-fns/locale';
+import { DayPicker } from 'react-day-picker';
 
 export default function App() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -16,12 +17,6 @@ export default function App() {
     phone: ''
   });
 
-  function onChange(date) {
-    setCitaData(prevState => ({
-      ...prevState,
-      date: date.toLocaleDateString()
-    }));
-  }
 
   function handleAddCita() {
     setModalVisible(true);
@@ -39,17 +34,8 @@ export default function App() {
     }));
   }
 
-  function handleCheckChange(event) {
-    const { name, checked } = event.target;
-    setCitaData(prevState => ({
-      ...prevState,
-      [name]: checked
-    }));
-  }
-
   function handleSubmit(event) {
     event.preventDefault();
-    console.log(citaData);
     handleCloseModal();
   }
 
@@ -61,20 +47,52 @@ export default function App() {
     }));
   }
 
+  const css = `
+  .my-selected:not([disabled]) { 
+    font-weight: bold; 
+    border: 2px solid currentColor;
+  }
+
+  .my-today { 
+    font-weight: bold;
+    font-size: 140%; 
+    color: black;
+    --rdp-cell-size: 40px
+  }
+`;
+
+  const [selected, setSelected] = React.useState(null);
+
   return (
     <div className="flex flex-col h-screen">
-      <div className="mb-4 font-bold text-4xl p-4">Citas Proximas</div>
+      <div className="mb-4 font-bold text-4xl p-4 mx-auto">CITAS PROXIMAS @franciscovmag</div>
       <div className="flex flex-1">
         <div className="flex-1">
           <Meetings />
         </div>
-        <div className="flex-1 py-10 flex flex-col items-center justify-center h-3/5">
-          <Calendar
-            className={"border-2 border-gray-400 p-2 rounded-lg w-3/4 font-bold text-xl"}
-            onChange={onChange}
-            value={new Date()}
+        <div className="flex-1 py-10 flex flex-col items-center justify-center h-4/5" >
+          <style>{css}</style>
+          <DayPicker
+            styles={{
+              cell: { height: '60px', fontSize: '1em', padding: '0.5em' },
+            }}
+
+            className=' bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4'
+            mode="single"
+            selected={selected}
+            onSelect={setSelected}
+            showOutsideDays
+            fixedWeeks
+            locale={es}
+            modifiersClassNames={{
+              selected: 'my-selected',
+              today: 'my-today',
+
+            }}
+
+
           />
-          <button className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-3/4" onClick={handleAddCita}>
+          <button className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-1/4" onClick={handleAddCita}>
             Agregar cita
           </button>
           {modalVisible && (
@@ -203,6 +221,6 @@ export default function App() {
           )}
         </div>
       </div>
-    </div>
+    </div >
   );
 }

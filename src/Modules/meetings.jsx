@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import CalendarLogo from "../img/calendar.svg";
 import Pin from "../img/pin.svg";
 import WPMsg from "./WPMsg";
+import Edit from "../Modules/Editwindow";
+import Cancel from "../Modules/Cancel";
 
 
 export default function Meetings() {
@@ -38,16 +40,52 @@ export default function Meetings() {
         }
     ];
 
-    function toDate(date) {
-        return new Date(date);
-    }
+    const [edit, setEdit] = useState(false);
+    const [editData, setEditData] = useState({});
+    const [cancel, setCancel] = useState(false);
 
-    const handleCancelMeeting = (id) => {
-        console.log("sasas");
+    const handleCancelMeeting = (data) => {
+        setCancel(true);
     };
 
-    const handleEditMeeting = (id) => {
-        // Lógica para editar la cita con el ID proporcionado
+    const handleEditMeeting = (data) => {
+        setEdit(true);
+        setEditData(data);
+    };
+
+    const handleCloseModal = () => {
+        setEdit(false);
+    };
+
+    function handleInputChange(event) {
+        const { name, value } = event.target;
+        setEditData(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    }
+
+    function handleCheck(event) {
+        const { name } = event.target;
+        setEditData(prevState => ({
+            ...prevState,
+            [name]: !prevState[name]
+        }));
+    }
+
+    const hancleSubmit = (event) => {
+        event.preventDefault();
+        console.log(editData);
+        handleCloseModal();
+    };
+
+    const handleCloseCancel = () => {
+        setCancel(false);
+    };
+
+    const handleConfirmCancel = () => {
+        console.log("Cita cancelada");
+        handleCloseCancel();
     };
 
     // Estado para controlar el menú desplegable
@@ -56,7 +94,11 @@ export default function Meetings() {
 
     useEffect(() => {
         const handleOutsideClick = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target) &&
+                !event.target.closest('.option-menu-burger')
+            ) {
                 setShowDropdown(null);
             }
         };
@@ -80,8 +122,8 @@ export default function Meetings() {
                         {/* Menú desplegable */}
                         {showDropdown === meeting.id && (
                             <div className="absolute top-0 right-0 mt-8 w-40 bg-white border border-gray-200 rounded-lg shadow-md z-10">
-                                <button onClick={() => handleEditMeeting(meeting.id)} className="block px-4 py-2 text-gray-800 hover:bg-gray-100 w-full text-left">Modificar</button>
-                                <button onClick={() => handleCancelMeeting(meeting.id)} className="block px-4 py-2 text-gray-800 hover:bg-gray-100 w-full text-left">Cancelar cita</button>
+                                <button onClick={() => handleEditMeeting(meeting)} className="block px-4 py-2 text-gray-800 hover:bg-gray-100 w-full text-left option-menu-burger">Modificar</button>
+                                <button onClick={() => handleCancelMeeting(meeting)} className="block px-4 py-2 text-gray-800 hover:bg-gray-100 w-full text-left option-menu-burger">Cancelar cita</button>
                             </div>
                         )}
                     </div>
@@ -95,6 +137,17 @@ export default function Meetings() {
 
                 </div>
             ))}
+            {edit && <Edit
+                handleCloseModal={handleCloseModal}
+                datos={editData}
+                handleInputChange={handleInputChange}
+                handleCheck={handleCheck}
+                handleSubmit={hancleSubmit}
+            />}
+            {cancel && <Cancel
+                handleCloseModal={handleCloseCancel}
+                handleSubmit={handleConfirmCancel}
+            />}
         </div>
     );
 }

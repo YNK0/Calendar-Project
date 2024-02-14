@@ -7,10 +7,11 @@ import { DayPicker } from 'react-day-picker';
 
 export default function App() {
   const [modalVisible, setModalVisible] = useState(false);
+  const [selected, setSelected] = useState(null);
   const [citaData, setCitaData] = useState({
     motivo: '',
     nombre: '',
-    date: '',
+    date: selected,
     time: '',
     place: '',
     confirmed: false,
@@ -19,10 +20,23 @@ export default function App() {
 
 
   function handleAddCita() {
+    if (!selected) {
+      alert('Selecciona una fecha en el calendario para agregar una cita.');
+      return;
+    }
     setModalVisible(true);
   }
 
   function handleCloseModal() {
+    setCitaData({
+      motivo: '',
+      nombre: '',
+      date: selected,
+      time: '',
+      place: '',
+      confirmed: false,
+      phone: ''
+    });
     setModalVisible(false);
   }
 
@@ -60,8 +74,6 @@ export default function App() {
     --rdp-cell-size: 40px
   }
 `;
-
-  const [selected, setSelected] = React.useState(null);
 
   return (
     <div className="flex flex-col h-screen">
@@ -137,7 +149,7 @@ export default function App() {
                       id="date"
                       type="text"
                       name="date"
-                      value={citaData.date}
+                      value={selected.toLocaleDateString()}
                       onChange={handleInputChange}
                       placeholder="Fecha"
                       disabled
@@ -190,7 +202,8 @@ export default function App() {
                     </label>
                     <input
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      id="phone"
+                      id="phone_number"
+                      autoComplete='off'
                       type="text"
                       name="phone"
                       maxLength="10"

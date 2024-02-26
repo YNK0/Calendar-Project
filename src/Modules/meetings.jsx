@@ -5,46 +5,22 @@ import WPMsg from "./WPMsg";
 import Edit from "../Modules/Editwindow";
 import Cancel from "../Modules/Cancel";
 
-
 export default function Meetings() {
-    // se hace el get a la api para obtener las citas proximas
+    // Get data from the API
+    const [data, setData] = useState([]);
 
-    const sampleData = [
-        {
-            id: 1,
-            motivo: "Cita",
-            nombre: "Jose Antonio Perez",
-            date: "10 de Enero, 2022",
-            time: "12:00 PM",
-            place: "Nacajuca",
-            confirmed: false,
-            phone: "9931234567"
-        }, {
-            id: 2,
-            motivo: "Reunión",
-            nombre: "Maria Hernandez",
-            date: "15 de Enero, 2022",
-            time: "10:00 AM",
-            place: "Villahermosa",
-            confirmed: true,
-            phone: "9931234567"
-        }, {
-            id: 3,
-            motivo: "Cita",
-            nombre: "Juan Perez",
-            date: "20 de Enero, 2022",
-            time: "11:00 AM",
-            place: "Cunduacan",
-            confirmed: false,
-            phone: "9931234567"
-        }
-    ];
+    useEffect(() => {
+        fetch('http://localhost:3000/')
+            .then(response => response.json())
+            .then(data => setData(data));
+    }, []);
 
     const [edit, setEdit] = useState(false);
     const [editData, setEditData] = useState({});
     const [cancel, setCancel] = useState(false);
 
-    const handleCancelMeeting = (data) => {
+    const handleCancelMeeting = (id) => {
+        setEditData({ id }); // Set the ID of the meeting to editData
         setCancel(true);
     };
 
@@ -73,7 +49,7 @@ export default function Meetings() {
         }));
     }
 
-    const hancleSubmit = (event) => {
+    const handleSubmit = (event) => {
         event.preventDefault();
         console.log(editData);
         handleCloseModal();
@@ -83,7 +59,7 @@ export default function Meetings() {
         setCancel(false);
     };
 
-    const handleConfirmCancel = () => {
+    const handleConfirmCancel = (id) => {
         console.log("Cita cancelada");
         handleCloseCancel();
     };
@@ -110,9 +86,15 @@ export default function Meetings() {
         };
     }, []);
 
+    function Todate(str) {
+        const date = new Date(str);
+        const options = { month: 'long', day: 'numeric' };
+        return date.toLocaleDateString('es-ES', options);
+    }
+
     return (
         <div className="flex justify-center items-center flex-col py-10">
-            {sampleData.map((meeting) => (
+            {data.map((meeting) => (
                 <div key={meeting.id} className="relative border-solid border-2 border-gray-400 p-2 my-2 rounded-lg w-3/4 ">
                     <div ref={dropdownRef} className="absolute top-0 right-0 p-3" >
                         {/* Icono de tres puntos que muestra el menú desplegable */}
@@ -123,18 +105,19 @@ export default function Meetings() {
                         {showDropdown === meeting.id && (
                             <div className="absolute top-0 right-0 mt-8 w-40 bg-white border border-gray-200 rounded-lg shadow-md z-10">
                                 <button onClick={() => handleEditMeeting(meeting)} className="block px-4 py-2 text-gray-800 hover:bg-gray-100 w-full text-left option-menu-burger">Modificar</button>
-                                <button onClick={() => handleCancelMeeting(meeting)} className="block px-4 py-2 text-gray-800 hover:bg-gray-100 w-full text-left option-menu-burger">Cancelar cita</button>
+                                <button onClick={() => handleCancelMeeting(meeting.id)} className="block px-4 py-2 text-gray-800 hover:bg-gray-100 w-full text-left option-menu-burger">Cancelar cita</button>
                             </div>
                         )}
                     </div>
                     <h2 className="text-3xl font-medium py-2">{meeting.motivo} - {meeting.nombre}</h2>
                     <p className="font-semibold my-2">
                         <img src={CalendarLogo} alt="Icono" className="inline-block w-6 h-6 mx-1" />
-                        {meeting.date} a las {meeting.time} | <img src={Pin} alt="Icono" className="inline-block w-6 h-6 mx-1" />{meeting.place}
+                        {Todate(meeting.date)} a las {meeting.time} | <img src={Pin} alt="Icono" className="inline-block w-6 h-6 mx-1" />{meeting.place}
                     </p>
-                    <p className={`my-2 font-semibold mx-1 ${meeting.confirmed ? 'text-green-600' : 'text-red-600'}`}>{meeting.confirmed ? "Cita confirmada" : "Por confirmar"}</p>
-                    {meeting.confirmed ? null : <WPMsg item={meeting} />}
-
+                    <p className={`my-2 font-semibold mx-1 ${meeting.confirmed === 'CONFIRMED' ? 'text-green-600' : 'text-red-600'}`}>
+                        {meeting.confirmed === 'CONFIRMED' ? "Cita confirmada" : "Por confirmar"}
+                    </p>
+                    {meeting.confirmed === 'CONFIRMED' ? null : <WPMsg item={meeting} />}
                 </div>
             ))}
             {edit && <Edit
@@ -142,11 +125,11 @@ export default function Meetings() {
                 datos={editData}
                 handleInputChange={handleInputChange}
                 handleCheck={handleCheck}
-                handleSubmit={hancleSubmit}
+                handleSubmit={handleSubmit}
             />}
             {cancel && <Cancel
+                datos={editData} // Pasar editData como datos
                 handleCloseModal={handleCloseCancel}
-                handleSubmit={handleConfirmCancel}
             />}
         </div>
     );

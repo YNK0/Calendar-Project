@@ -1,6 +1,6 @@
-import React from 'react'
-import wpmsg from '../img/wp.svg'
-import check from '../img/calendar-check.svg'
+import React, { useState } from 'react';
+import wpmsg from '../img/wp.svg';
+import check from '../img/calendar-check.svg';
 
 export default function WPMsg(item) {
     const user = {
@@ -12,22 +12,44 @@ export default function WPMsg(item) {
         place: item.item.place,
         confirmed: item.item.confirmed,
         phone: item.item.phone
-    }
+    };
+
+    const [modalOpen, setModalOpen] = useState(false);
 
     const confirmationMessage = `Estimado/a ${user.nombre}, le escribo para confirmar nuestra cita programada para ${user.date} a las ${user.time}. ¡Espero su confirmacion! - Abogados Salazar y Salazar.`;
 
     const encodedMessage = encodeURIComponent(confirmationMessage);
     const url = `https://wa.me/1${user.phone}?text=${encodedMessage}`;
 
-
-    function toDate(date) {
-        console.log(new Date(date.date))
-    }
+    const confirmCita = () => {
+        setModalOpen(true);
+    };
 
     return (
         <div>
-            <a href={url} target="_blank"><img src={wpmsg} alt="Icono" className="inline-block w-12 h-12 mx-1 transform transition-transform hover:scale-110" /></a>
-            <button onClick={() => toDate(user)} className='font-bold transition-transform hover:-translate-y-1'><img src={check} alt="Icono" className="inline-block w-6 h-6 ml-4 mr-1 " />Confirmar cita</button>
+            <a href={url} target="_blank" rel="noopener noreferrer">
+                <img src={wpmsg} alt="Icono Whastapp" className="inline-block w-12 h-12 mx-1 transform transition-transform hover:scale-110" />
+            </a>
+            <button onClick={confirmCita} className='font-bold transition-transform hover:-translate-y-1'>
+                <img src={check} alt="Icono" className="inline-block w-6 h-6 ml-4 mr-1 " />
+                Confirmar cita
+            </button>
+
+            {modalOpen && (
+                <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center z-50">
+                    <div className="bg-white p-6 rounded-md shadow-md">
+                        <p className="mb-4">¿Estás seguro de que quieres confirmar la cita?</p>
+                        <div className="flex justify-center space-x-4">
+                            <button onClick={() => setModalOpen(false)} className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md">Cancelar</button>
+                            <button onClick={() => {
+                                fetch(`http://localhost:3000/confirm/${user.id}`, {});
+                                setModalOpen(false);
+                                window.location.reload();
+                            }} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md">Confirmar</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
-    )
+    );
 }

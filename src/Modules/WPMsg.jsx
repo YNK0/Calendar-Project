@@ -14,9 +14,15 @@ export default function WPMsg(item) {
         phone: item.item.phone
     };
 
+    function Todate(str) {
+        const date = new Date(str);
+        const options = { month: 'long', day: 'numeric' };
+        return date.toLocaleDateString('es-ES', options);
+    }
+
     const [modalOpen, setModalOpen] = useState(false);
 
-    const confirmationMessage = `Estimado/a ${user.nombre}, le escribo para confirmar nuestra cita programada para ${user.date} a las ${user.time}. ¡Espero su confirmacion! - Abogados Salazar y Salazar.`;
+    const confirmationMessage = `Estimado/a ${user.nombre}, le escribo para confirmar nuestra cita programada para ${Todate(user.date)} a las ${user.time}. ¡Espero su confirmacion! - Salazar y Salazar.`;
 
     const encodedMessage = encodeURIComponent(confirmationMessage);
     const url = `https://wa.me/1${user.phone}?text=${encodedMessage}`;

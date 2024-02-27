@@ -1,4 +1,10 @@
-export default function Editwindow({ handleCloseModal, datos, handleInputChange, handleCheck, handleSubmit, newData }) {
+export default function Editwindow({ handleCloseModal, datos, handleInputChange, handleCheck, handleSubmit }) {
+    function Todate(str) {
+        const date = new Date(str);
+        const options = { month: 'long', day: 'numeric' };
+        return date.toLocaleDateString('es-ES', options);
+    }
+
     return (
         <div>
             <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -42,7 +48,7 @@ export default function Editwindow({ handleCloseModal, datos, handleInputChange,
                                 id="date"
                                 type="text"
                                 name="date"
-                                value={datos.date}
+                                value={Todate(datos.date)}
                                 onChange={handleInputChange}
                                 placeholder="Fecha"
                                 disabled
@@ -83,7 +89,7 @@ export default function Editwindow({ handleCloseModal, datos, handleInputChange,
                                     type="checkbox"
                                     className="form-checkbox h-4 w-4 text-blue-500"
                                     name="confirmed"
-                                    checked={datos.confirmed}
+                                    checked={datos.confirmed === 'CONFIRMED' ? true : false}
                                     onChange={handleCheck}
                                 />
                                 <span className="ml-2 text-gray-700">Confirmado</span>
@@ -112,7 +118,7 @@ export default function Editwindow({ handleCloseModal, datos, handleInputChange,
                                 Guardar
                             </button>
                             <button
-                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                                 type="button"
                                 onClick={handleCloseModal}
                             >

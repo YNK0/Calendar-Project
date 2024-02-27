@@ -12,7 +12,8 @@ export default function Meetings() {
     useEffect(() => {
         fetch('http://localhost:3000/')
             .then(response => response.json())
-            .then(data => setData(data));
+            .then(data => setData(data))
+            .catch(error => console.error(error));
     }, []);
 
     const [edit, setEdit] = useState(false);
@@ -51,17 +52,25 @@ export default function Meetings() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        console.log(editData);
+
+        if (editData.confirmed === true) {
+            editData.confirmed = 'CONFIRMED';
+        } else {
+            editData.confirmed = 'PENDING';
+        }
+        fetch(`http://localhost:3000/`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(editData)
+        });
         handleCloseModal();
+        window.location.reload();
     };
 
     const handleCloseCancel = () => {
         setCancel(false);
-    };
-
-    const handleConfirmCancel = (id) => {
-        console.log("Cita cancelada");
-        handleCloseCancel();
     };
 
     // Estado para controlar el menú desplegable
@@ -95,7 +104,7 @@ export default function Meetings() {
     return (
         <div className="flex justify-center items-center flex-col py-10">
             {data.map((meeting) => (
-                <div key={meeting.id} className="relative border-solid border-2 border-gray-400 p-2 my-2 rounded-lg w-3/4 ">
+                <div key={meeting.id} id={meeting.id} className="relative border-solid border-2 border-gray-400 p-2 my-2 rounded-lg w-3/4 ">
                     <div ref={dropdownRef} className="absolute top-0 right-0 p-3" >
                         {/* Icono de tres puntos que muestra el menú desplegable */}
                         <svg onClick={() => setShowDropdown(meeting.id)} xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">

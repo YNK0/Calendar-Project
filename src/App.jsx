@@ -9,6 +9,7 @@ export default function App() {
   const [modalVisible, setModalVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [citaData, setCitaData] = useState({
+    id: 1,
     motivo: '',
     nombre: '',
     date: selected,
@@ -29,6 +30,7 @@ export default function App() {
 
   function handleCloseModal() {
     setCitaData({
+      id: 1,
       motivo: '',
       nombre: '',
       date: selected,
@@ -50,6 +52,21 @@ export default function App() {
 
   function handleSubmit(event) {
     event.preventDefault();
+    citaData.date = selected;
+    if (citaData.confirmed === true) {
+      citaData.confirmed = 'CONFIRMED';
+    } else {
+      citaData.confirmed = 'PENDING';
+    }
+    console.log(JSON.stringify(citaData));
+    fetch('http://localhost:3000/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(citaData)
+    });
+    window.location.reload();
     handleCloseModal();
   }
 
@@ -74,10 +91,9 @@ export default function App() {
     --rdp-cell-size: 40px
   }
 `;
-
   return (
     <div className="flex flex-col h-screen">
-      <div className="mb-4 font-bold text-4xl p-4 mx-auto">CITAS PROXIMAS @franciscovmag</div>
+      <div className="mb-4 font-bold text-4xl p-4 mx-auto">Ageda de citas @franciscovmag</div>
       <div className="flex flex-1">
         <div className="flex-1">
           <Meetings />
